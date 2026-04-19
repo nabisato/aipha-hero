@@ -3,31 +3,31 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>AiPHA — Hero Animation</title>
+<title>AiPHA — AIで、文明を加速する</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
-  /* SF Pro — Apple's system font. On Apple devices this resolves to the
-     real SF Pro; on other OSes we gracefully fall back through the
-     system stack to the closest available geometric sans-serif. */
   :root {
     --font-sf: "SF Pro Display", "SF Pro", -apple-system, BlinkMacSystemFont,
                "Helvetica Neue", "Segoe UI", "Arial", sans-serif;
     --font-jp: "SF Pro Display", "SF Pro", -apple-system, BlinkMacSystemFont,
                "Hiragino Sans", "Hiragino Kaku Gothic ProN",
                "Noto Sans JP", "Yu Gothic", sans-serif;
-  }
-  :root {
-    --bg: #f5f6f8;
-    --bg-2: #eef0f4;
-    --ink: #0a1020;
-    --ink-sub: #495063;
-    --blue: #1d3fd1;       /* primary deep blue from design */
-    --blue-2: #2b55ff;
-    --blue-3: #6b8cff;
-    --blue-ink: #0b1a6d;
-    --line: rgba(11, 26, 109, 0.08);
+
+    --bg:      #EBEEEF;
+    --ink:     #0E1220;
+    --ink-sub: #3A3F55;
+    --ink-dim: #7A7F95;
+
+    --blue-bright: #2B55FF;
+    --blue-deep:   #183D7D;
+    --blue:        #1D3FD1;
+    --blue-mid:    #306DB6;
+    --blue-light:  #6B8CFF;
+    --cyan-soft:   #8BB7FF;
+
+    --ribbon-grey: #C6C9CD;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -35,18 +35,18 @@
   body {
     background: var(--bg);
     color: var(--ink);
-    font-family: var(--font-jp);
+    font-family: var(--font-sf);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     overflow-x: hidden;
   }
 
-  /* ---------- Header (uses provided SVG asset) ---------- */
+  /* ---------- Header ---------- */
   .nav {
     position: fixed; top: 0; left: 0; right: 0;
     z-index: 40;
     background: transparent;
-    pointer-events: none; /* purely visual for this mock */
+    pointer-events: none;
   }
   .nav img {
     display: block;
@@ -63,631 +63,301 @@
     overflow: hidden;
     padding-top: clamp(80px, calc(100vw * 134 / 1440), 160px);
     isolation: isolate;
-  }
-
-  /* ---------- AI-feeling neural network background ---------- */
-  .network {
-    position: absolute; inset: 0;
-    z-index: 1;
-    pointer-events: none;
-    /* Gently drift the whole network up-right */
-    animation: netDrift 18s ease-in-out infinite alternate;
-    mask-image: radial-gradient(ellipse at 50% 55%, rgba(0,0,0,1) 20%, rgba(0,0,0,0.5) 65%, rgba(0,0,0,0.1) 90%, transparent 100%);
-    -webkit-mask-image: radial-gradient(ellipse at 50% 55%, rgba(0,0,0,1) 20%, rgba(0,0,0,0.5) 65%, rgba(0,0,0,0.1) 90%, transparent 100%);
-  }
-  @keyframes netDrift {
-    0%   { transform: translate(0, 0); }
-    100% { transform: translate(24px, -24px); }
-  }
-  .network svg { width: 100%; height: 100%; display: block; }
-
-  /* Connection lines between nodes */
-  .network .edge {
-    stroke: rgba(29, 63, 209, 0.18);
-    stroke-width: 1;
-    fill: none;
-    stroke-dasharray: 600;
-    stroke-dashoffset: 600;
-    animation: drawEdge 1.4s ease-out forwards;
-  }
-  @keyframes drawEdge {
-    to { stroke-dashoffset: 0; }
-  }
-
-  /* Nodes */
-  .network .node {
-    fill: rgba(29, 63, 209, 0.7);
-    opacity: 0;
-    transform-box: fill-box;
-    transform-origin: center;
-    animation: nodeIn 0.5s ease-out forwards, nodePulse 3.6s ease-in-out infinite;
-  }
-  .network .node.accent {
-    fill: rgba(43, 85, 255, 1);
-    filter: drop-shadow(0 0 6px rgba(43,85,255,0.55));
-  }
-  @keyframes nodeIn   { to { opacity: 1; } }
-  @keyframes nodePulse {
-    0%, 100% { transform: scale(1);   opacity: 0.9; }
-    50%      { transform: scale(1.35); opacity: 1;   }
-  }
-
-  /* Signal pulses that travel along edges */
-  .network .signal {
-    fill: #2b55ff;
-    filter: drop-shadow(0 0 4px rgba(43,85,255,0.7));
-  }
-  .network .signal circle {
-    r: 2.5;
-  }
-
-  /* Speed streaks — ascending diagonally to the upper-right */
-  .streaks {
-    position: absolute; inset: 0;
-    overflow: hidden;
-    z-index: 2;
-    pointer-events: none;
-  }
-  .streak {
-    position: absolute;
-    height: 1px;
-    background: linear-gradient(90deg, transparent 0%, rgba(29, 63, 209, 0.45) 40%, rgba(43, 85, 255, 0.85) 55%, transparent 100%);
-    filter: blur(0.3px);
-    opacity: 0;
-    /* Each streak angles up-right (~ -22deg) */
-    transform: rotate(-22deg) translateX(-60vw);
-    transform-origin: left center;
-    animation: streakFly linear infinite;
-  }
-  @keyframes streakFly {
-    0%   { transform: rotate(-22deg) translateX(-60vw) scaleX(0.3); opacity: 0; }
-    12%  { opacity: 0.9; }
-    75%  { opacity: 0.9; }
-    100% { transform: rotate(-22deg) translateX(160vw) scaleX(1.1); opacity: 0; }
-  }
-
-  /* Subtle radial glow — slowly drifts upward to reinforce the rise */
-  .glow {
-    position: absolute;
-    width: 900px; height: 900px;
-    left: 50%; top: 55%;
-    transform: translate(-50%, -50%);
-    background: radial-gradient(circle, rgba(43, 85, 255, 0.16) 0%, rgba(43, 85, 255, 0) 60%);
-    z-index: 2;
-    filter: blur(20px);
-    animation: glowRise 9s ease-in-out infinite;
-  }
-  @keyframes glowRise {
-    0%, 100% { opacity: 0.75; transform: translate(-50%, -48%) scale(1); }
-    50%      { opacity: 1;    transform: translate(-46%, -54%) scale(1.06); }
-  }
-
-  /* ---------- Main content ---------- */
-  .hero-inner {
-    position: relative;
-    z-index: 10;
-    max-width: 1280px;
-    margin: 0 auto;
-    padding: 0 40px;
-    height: calc(100vh - clamp(80px, calc(100vw * 134 / 1440), 160px));
-    display: flex; flex-direction: column;
-    justify-content: center; align-items: center;
-    text-align: center;
-  }
-
-  /* ---------- Static accent band: "Accelerate Everything" ----------
-     Single, motionless decorative line. Occupies its own horizontal band
-     below the main copy — never overlaps the foreground, and has no
-     animation so it doesn't compete with the background motion. */
-  .statement-band {
-    position: absolute;
-    left: 0; right: 0;
-    bottom: clamp(90px, 14vh, 150px);
-    z-index: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 28px;
-    pointer-events: none;
-    font-family: var(--font-sf);
-    font-weight: 800;
-    font-size: clamp(40px, 6vw, 96px);
-    letter-spacing: -0.015em;
-    line-height: 1;
-    white-space: nowrap;
-    opacity: 0;
-    animation: statementFadeIn 1.2s cubic-bezier(.2,.8,.2,1) 0.6s forwards;
-  }
-  @keyframes statementFadeIn { to { opacity: 1; } }
-
-  .statement-band .word {
-    color: transparent;
-    -webkit-text-stroke: 1px rgba(29, 63, 209, 0.42);
-  }
-  .statement-band .bullet {
-    width: 10px; height: 10px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #183D7D 0%, #1d3fd1 40%, #306DB6 70%, #6b8cff 100%);
-    flex: none;
-  }
-
-  /* Soft halo behind jp-main + pill so readability is guaranteed */
-  .copy-halo {
-    position: relative;
-    z-index: 2;
-    display: flex; flex-direction: column; align-items: center;
-    padding: 22px 44px 32px;
-    border-radius: 28px;
     background:
-      radial-gradient(ellipse at 50% 50%, rgba(245, 246, 248, 0.92) 0%, rgba(245, 246, 248, 0.55) 55%, rgba(245, 246, 248, 0) 100%);
+      radial-gradient(55% 45% at 92% 8%, rgba(139, 183, 255, 0.32) 0%, rgba(139,183,255,0) 70%),
+      var(--bg);
   }
 
-  /* English main — the star of the FV */
-  .eng-wrap {
-    position: relative;
-    z-index: 2;
-    width: 100%;
-    display: flex; flex-direction: column; align-items: center;
-    gap: 6px;
-  }
-  .eng-line {
-    font-family: var(--font-sf);
-    font-weight: 600;
-    letter-spacing: -0.02em;
-    line-height: 1.0;
-    color: var(--ink);
-    white-space: nowrap;
-    display: flex; align-items: baseline;
-    overflow: hidden;
-  }
-  .eng-line.l1 { font-size: clamp(44px, 8.4vw, 130px); }
-  .eng-line.l2 { font-size: clamp(44px, 8.4vw, 130px); }
-
-  /* Each word wraps spans so we can animate per-character */
-  .word {
-    display: inline-flex;
-    margin-right: 0.25em;
-    overflow: hidden;
-    padding-bottom: 0.06em;
-  }
-  .word:last-child { margin-right: 0; }
-
-  .char {
-    display: inline-block;
-    transform: translateY(110%) translateX(-0.35em) skewX(-14deg);
-    opacity: 0;
-    will-change: transform, opacity;
-  }
-
-  .accent {
-    /* Persistent shimmering gradient — reinforces that the text is alive */
-    background: linear-gradient(
-      100deg,
-      var(--blue-ink) 0%,
-      var(--blue) 30%,
-      #6ea0ff 48%,
-      #ffffff 50%,
-      #6ea0ff 52%,
-      var(--blue) 70%,
-      var(--blue-ink) 100%
-    );
-    background-size: 220% 100%;
-    background-position: 100% 0;
-    -webkit-background-clip: text;
-            background-clip: text;
-    color: transparent;
-    position: relative;
-    /* Starts after the entry completes (~2.4s) */
-    animation: accentShimmer 6s ease-in-out 2.4s infinite;
-  }
-  @keyframes accentShimmer {
-    0%   { background-position: 100% 0; }
-    50%  { background-position: 0% 0;   }
-    100% { background-position: 100% 0; }
-  }
-
-  /* Motion blur trail behind the "Accelerate Everything" line */
-  .trail {
+  /* Background ribbons + acceleration streaks */
+  .ribbons {
     position: absolute;
     inset: 0;
-    display: inline-flex;
+    width: 100%; height: 100%;
+    z-index: 1;
     pointer-events: none;
-    color: transparent;
-    background: linear-gradient(92deg, rgba(29, 63, 209, 0.55), rgba(107, 140, 255, 0.35));
-    -webkit-background-clip: text;
-            background-clip: text;
-    filter: blur(8px);
-    transform: translateX(-14px);
-    opacity: 0;
-    animation: trailFade 1.4s ease-out 2.0s forwards;
-  }
-  @keyframes trailFade {
-    0%   { opacity: 0.9; transform: translateX(-48px) scaleX(1.08); }
-    100% { opacity: 0;   transform: translateX(-6px)  scaleX(1); }
   }
 
-  /* Divider line that sweeps across under english */
-  .sweep {
+  /* ---------- Hero content — left aligned ---------- */
+  .hero-content {
     position: relative;
-    z-index: 2;
-    margin-top: 26px;
-    height: 1px; width: min(780px, 86%);
-    background: linear-gradient(90deg, transparent, rgba(11,26,109,0.15), transparent);
+    z-index: 10;
+    width: 100%;
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: clamp(40px, 8vh, 110px) clamp(32px, 6vw, 120px) 0;
+    text-align: left;
+  }
+
+  /* English headline — main visual, 2 lines with hierarchy */
+  .headline {
+    font-family: var(--font-sf);
+    font-weight: 600;
+    line-height: 0.96;
+    letter-spacing: -0.008em;
+    color: var(--ink);
+    text-shadow:
+      0 0 24px rgba(235, 238, 239, 0.9),
+      0 0 48px rgba(235, 238, 239, 0.55);
+  }
+  /* Line 1 (Think AI. Build AI.) — subordinate size */
+  .headline .line-1 { font-size: clamp(36px, 4.6vw, 68px); }
+  /* Line 2 (Accelerate Everything.) — emphasized, larger */
+  .headline .line-2 { font-size: clamp(52px, 6.8vw, 100px); }
+  .headline .line {
+    display: block;
     overflow: hidden;
+    white-space: nowrap;
+    /* Room for descenders (g, y, p) so they don't get clipped by overflow:hidden */
+    padding-bottom: 0.28em;
+    margin-bottom: -0.32em;
+  }
+  .headline .line > span {
+    display: inline-block;
     opacity: 0;
-    animation: fadeIn 0.6s ease 1.6s forwards;
+    transform: translateY(110%);
+    animation: riseIn 1.1s cubic-bezier(.2,.85,.2,1) forwards;
+    padding-bottom: 0.12em;
   }
-  .sweep::after {
-    content: "";
-    position: absolute; inset: 0;
-    background: linear-gradient(90deg, transparent 40%, var(--blue-2) 50%, transparent 60%);
-    transform: translateX(-100%);
-    animation: sweepMove 2.4s ease-in-out 1.8s infinite;
+  .headline .line-1 > span { animation-delay: 0.25s; }
+  .headline .line-2 > span { animation-delay: 0.45s; }
+  .headline .accent {
+    background: linear-gradient(100deg, #2B55FF 0%, #6B8CFF 60%, #8BB7FF 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    letter-spacing: 0.002em;
   }
-  @keyframes sweepMove {
-    0%   { transform: translateX(-100%); }
-    60%  { transform: translateX(100%); }
-    100% { transform: translateX(100%); }
+  @keyframes riseIn {
+    to { opacity: 1; transform: translateY(0); }
   }
 
-  /* Japanese headline */
-  .jp-main {
-    position: relative;
-    z-index: 2;
-    margin-top: 0;
+  /* Japanese main copy */
+  .main-jp {
+    margin-top: clamp(36px, 5vh, 72px);
     font-family: var(--font-jp);
-    font-weight: 800;
-    font-size: clamp(32px, 4.2vw, 58px);
+    font-weight: 700;
+    font-size: clamp(28px, 3.4vw, 54px);
+    line-height: 1.3;
     letter-spacing: 0.04em;
     color: var(--ink);
     opacity: 0;
-    transform: translateY(12px);
-    animation: riseFade 0.9s cubic-bezier(.2,.8,.2,1) 1.8s forwards;
-  }
-  .jp-main .ac {
-    position: relative;
-    padding: 0 2px;
-    /* Use the specified blue gradient */
-    background: linear-gradient(92deg, #183D7D 0%, #1d3fd1 40%, #306DB6 70%, #6b8cff 100%);
-    background-size: 220% 100%;
-    background-position: 0 0;
-    -webkit-background-clip: text;
-            background-clip: text;
-    color: transparent;
-    animation: acShimmer 5s ease-in-out 3s infinite;
-  }
-  @keyframes acShimmer {
-    0%, 100% { background-position: 0 0;    }
-    50%      { background-position: 100% 0; }
-  }
-  .jp-main .ac::after {
-    content: "";
-    position: absolute; left: 0; right: 0; bottom: -4px;
-    height: 3px;
-    background: linear-gradient(92deg, #183D7D 0%, #1d3fd1 40%, #306DB6 70%, #6b8cff 100%);
-    transform: scaleX(0);
-    transform-origin: left;
-    animation: underline 0.9s cubic-bezier(.2,.8,.2,1) 2.5s forwards;
-  }
-  @keyframes underline {
-    to { transform: scaleX(1); }
+    transform: translateY(14px);
+    animation: riseFade 1s cubic-bezier(.2,.8,.2,1) 0.95s forwards;
+    /* Strong halo to guarantee readability if animation passes behind */
+    text-shadow:
+      0 0 18px rgba(235, 238, 239, 1),
+      0 0 36px rgba(235, 238, 239, 0.95),
+      0 2px 10px rgba(235, 238, 239, 0.9);
   }
 
-  /* Sub copy pill */
-  .pill {
-    position: relative;
-    z-index: 2;
-    margin-top: 26px;
-    display: inline-flex; align-items: center; gap: 12px;
-    padding: 14px 28px;
-    border-radius: 999px;
-    background: rgba(29, 63, 209, 0.08);
-    color: var(--blue-ink);
+  /* Sub description — width-matched to main copy (main ≈ 11em → sub ~22em,
+     so sub font-size ≈ main * 11/22 ≈ main * 0.5) */
+  .sub-jp {
+    margin-top: clamp(12px, 1.6vh, 22px);
     font-family: var(--font-jp);
-    font-weight: 700;
-    font-size: clamp(15px, 1.5vw, 20px);
-    letter-spacing: 0.08em;
-    border: 1px solid rgba(29, 63, 209, 0.22);
-    opacity: 0;
-    transform: translateY(10px);
-    animation: riseFade 0.8s cubic-bezier(.2,.8,.2,1) 2.2s forwards;
-  }
-  .pill .dot-ani {
-    width: 10px; height: 10px; border-radius: 50%;
-    /* Use the specified blue gradient */
-    background: linear-gradient(135deg, #183D7D 0%, #1d3fd1 40%, #306DB6 70%, #6b8cff 100%);
-    box-shadow: 0 0 0 0 rgba(43,85,255, 0.6);
-    animation: pulse 1.8s ease-in-out infinite;
-  }
-  @keyframes pulse {
-    0%, 100% { box-shadow: 0 0 0 0   rgba(43,85,255, 0.55); }
-    50%      { box-shadow: 0 0 0 10px rgba(43,85,255, 0);    }
-  }
-
-  /* Scroll cue — now doubles as the "Accelerate Everything" sign-off */
-  .scroll-cue {
-    position: absolute; bottom: 28px; left: 50%;
-    transform: translateX(-50%);
-    display: flex; flex-direction: column; align-items: center; gap: 12px;
+    font-weight: 500;
+    font-size: clamp(14px, 1.72vw, 27px);
+    letter-spacing: 0.04em;
     color: var(--ink-sub);
     opacity: 0;
-    animation: fadeIn 1s ease 2.8s forwards;
-  }
-  .scroll-cue .label {
-    font-family: var(--font-sf);
-    font-size: 13px;
-    font-weight: 600;
-    letter-spacing: 0.18em;
-    background: linear-gradient(92deg, #183D7D 0%, #1d3fd1 40%, #306DB6 70%, #6b8cff 100%);
-    -webkit-background-clip: text;
-            background-clip: text;
-    color: transparent;
-  }
-  .scroll-cue .bar {
-    width: 1px; height: 48px;
-    background: linear-gradient(to bottom, transparent, rgba(11,26,109,0.35), transparent);
-    position: relative; overflow: hidden;
-  }
-  .scroll-cue .bar::after {
-    content: "";
-    position: absolute; left: 0; right: 0; top: -20px; height: 20px;
-    background: linear-gradient(to bottom, transparent, var(--blue-2));
-    animation: scrollDot 1.8s ease-in-out infinite;
-  }
-  @keyframes scrollDot {
-    0%   { top: -20px; }
-    100% { top: 48px;  }
+    transform: translateY(14px);
+    animation: riseFade 1s cubic-bezier(.2,.8,.2,1) 1.1s forwards;
+    text-shadow:
+      0 0 14px rgba(235, 238, 239, 1),
+      0 0 28px rgba(235, 238, 239, 0.9);
   }
 
-  /* Small meta labels — intersect/r-media style */
-  .meta {
-    position: absolute;
-    font-family: var(--font-sf);
-    font-size: 10px; letter-spacing: 0.25em; text-transform: uppercase;
-    color: var(--ink-sub);
-    opacity: 0;
-    animation: fadeIn 0.8s ease 2.6s forwards;
-  }
-  .meta.left  { top: 120px; left: 40px; }
-  .meta.right { top: 120px; right: 40px; text-align: right; }
-  .meta strong { display: block; color: var(--ink); font-weight: 600; margin-top: 4px; letter-spacing: 0.15em;}
-
-  /* Animations shared */
   @keyframes riseFade {
     to { opacity: 1; transform: translateY(0); }
   }
-  @keyframes fadeIn {
-    to { opacity: 1; }
+
+  /* Bottom-left copyright */
+  .copyright {
+    position: absolute;
+    bottom: clamp(24px, 3.5vh, 44px);
+    left: clamp(32px, 6vw, 120px);
+    font-family: var(--font-sf);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    color: var(--ink-dim);
+    z-index: 10;
+    opacity: 0;
+    animation: fadeIn 1s ease 1.3s forwards;
   }
 
-  /* Char intro keyframes */
-  @keyframes charIn {
-    0%   { transform: translateY(110%) translateX(-0.35em) skewX(-14deg); opacity: 0; }
-    60%  { opacity: 1; }
-    100% { transform: translateY(0) translateX(0) skewX(0); opacity: 1; }
+  /* Bottom-right scroll button */
+  .scroll-btn {
+    position: absolute;
+    bottom: clamp(20px, 3vh, 40px);
+    right: clamp(24px, 4vw, 64px);
+    width: clamp(60px, 5.2vw, 80px);
+    height: clamp(60px, 5.2vw, 80px);
+    border-radius: clamp(14px, 1.2vw, 20px);
+    background: rgba(255, 255, 255, 0.45);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(26, 26, 26, 0.12);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.25s ease, transform 0.25s ease, border-color 0.25s ease;
+    z-index: 10;
+    opacity: 0;
+    animation: fadeIn 1s ease 1.4s forwards, btnBob 3.2s ease-in-out 2.4s infinite;
+  }
+  .scroll-btn:hover {
+    background: rgba(43, 85, 255, 0.14);
+    border-color: rgba(43, 85, 255, 0.5);
+    transform: translateY(-2px);
+  }
+  .scroll-btn svg {
+    width: 40%; height: 40%;
+    color: var(--ink);
+    stroke-width: 1.6;
+  }
+  @keyframes btnBob {
+    0%, 100% { translate: 0 0; }
+    50%      { translate: 0 6px; }
   }
 
-  /* When JS assigns .animate, trigger staggered intro */
-  .animate .char {
-    animation: charIn 0.9s cubic-bezier(.19,.9,.2,1) both;
-  }
+  @keyframes fadeIn { to { opacity: 1; } }
 
-  /* Line 3 gets a slight additional "push" feel */
-  .l3 .char {
-    animation-duration: 1s;
-    animation-timing-function: cubic-bezier(.16,1,.2,1);
-  }
-
-  /* mobile tweaks */
+  /* Mobile */
   @media (max-width: 720px) {
-    .nav-links { display: none; }
-    .meta { display: none; }
-    .hero-inner { padding: 0 20px; }
-    .jp-main { font-size: 20px; }
-    .eng-line { letter-spacing: -0.015em; }
-    .eng-line.l3 { font-size: 14vw; }
+    .hero-content { padding-left: 22px; padding-right: 22px; }
+    .copyright { left: 22px; bottom: 20px; }
+    .scroll-btn { right: 18px; bottom: 16px; width: 54px; height: 54px; }
+    .headline { font-size: clamp(34px, 9vw, 54px); letter-spacing: -0.005em; }
+    .main-jp { font-size: clamp(22px, 6vw, 32px); }
+    .sub-jp { font-size: 18px; }
   }
 </style>
 </head>
 <body>
 
-<!-- Navigation: provided SVG header asset -->
 <nav class="nav">
-  <img src="header.svg" alt="AiPHA header" />
+  <img src="header.svg" alt="AiPHA" />
 </nav>
 
 <section class="hero">
-  <div class="network" aria-hidden="true">
-    <svg id="netSvg" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice"></svg>
+
+  <!-- Clean background: grey arc + diagonal acceleration curve with fast streaks -->
+  <svg class="ribbons" viewBox="0 0 1440 900"
+       preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+    <defs>
+      <!-- Diagonal blue acceleration gradient -->
+      <linearGradient id="accelBlue" x1="0%" y1="100%" x2="100%" y2="0%">
+        <stop offset="0%"   stop-color="#183D7D" stop-opacity="0" />
+        <stop offset="20%"  stop-color="#1D3FD1" stop-opacity="0.85" />
+        <stop offset="55%"  stop-color="#2B55FF" stop-opacity="1" />
+        <stop offset="85%"  stop-color="#8BB7FF" stop-opacity="0.75" />
+        <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0" />
+      </linearGradient>
+      <!-- Fast streak gradient (bright head, fading tail) -->
+      <linearGradient id="streakHot" x1="0%" y1="100%" x2="100%" y2="0%">
+        <stop offset="0%"   stop-color="#6B8CFF" stop-opacity="0" />
+        <stop offset="75%"  stop-color="#FFFFFF" stop-opacity="1" />
+        <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0" />
+      </linearGradient>
+      <!-- Secondary thin blue streak -->
+      <linearGradient id="streakBlue" x1="0%" y1="100%" x2="100%" y2="0%">
+        <stop offset="0%"   stop-color="#2B55FF" stop-opacity="0" />
+        <stop offset="70%"  stop-color="#2B55FF" stop-opacity="1" />
+        <stop offset="100%" stop-color="#6B8CFF" stop-opacity="0" />
+      </linearGradient>
+    </defs>
+
+    <!-- Soft grey base arc: static sweep in upper-right corner for depth -->
+    <path d="M 1080 -60 Q 1350 60 1480 240 T 1680 620"
+          stroke="var(--ribbon-grey)" stroke-width="100" fill="none"
+          stroke-linecap="round" opacity="0.75" />
+
+
+    <!-- DIAGONAL BLUE ACCELERATION ARC: lower-left → upper-right -->
+    <path d="M 700 1100 Q 1000 830 1250 580 T 1680 -40"
+          stroke="url(#accelBlue)" stroke-width="140" fill="none"
+          stroke-linecap="round" opacity="1" />
+
+    <!-- FAST STREAK 1: bright white head racing diagonally up-right -->
+    <path d="M 700 1100 Q 1000 830 1250 580 T 1680 -40"
+          stroke="url(#streakHot)" stroke-width="5" fill="none"
+          stroke-linecap="round"
+          stroke-dasharray="520 3200" stroke-dashoffset="3200">
+      <animate attributeName="stroke-dashoffset"
+        values="3200; -200"
+        dur="1.8s"
+        calcMode="spline"
+        keyTimes="0; 1"
+        keySplines="0.5 0 0.85 0.15"
+        repeatCount="indefinite" />
+    </path>
+
+    <!-- FAST STREAK 2: thinner, staggered -->
+    <path d="M 700 1100 Q 1000 830 1250 580 T 1680 -40"
+          stroke="url(#streakHot)" stroke-width="2.5" fill="none"
+          stroke-linecap="round"
+          stroke-dasharray="340 3200" stroke-dashoffset="3200" opacity="0.8">
+      <animate attributeName="stroke-dashoffset"
+        values="3200; -200"
+        dur="1.8s"
+        begin="-0.9s"
+        calcMode="spline"
+        keyTimes="0; 1"
+        keySplines="0.5 0 0.85 0.15"
+        repeatCount="indefinite" />
+    </path>
+
+    <!-- FAST STREAK 3: thin trailing highlight -->
+    <path d="M 700 1100 Q 1000 830 1250 580 T 1680 -40"
+          stroke="url(#streakBlue)" stroke-width="1.5" fill="none"
+          stroke-linecap="round"
+          stroke-dasharray="220 3200" stroke-dashoffset="3200" opacity="0.75">
+      <animate attributeName="stroke-dashoffset"
+        values="3200; -200"
+        dur="1.8s"
+        begin="-1.35s"
+        calcMode="spline"
+        keyTimes="0; 1"
+        keySplines="0.5 0 0.85 0.15"
+        repeatCount="indefinite" />
+    </path>
+
+    <!-- Subtle secondary diagonal blue streak (offset path, different rhythm) -->
+    <path d="M 1200 1160 Q 1440 920 1560 680 T 1720 200"
+          stroke="url(#streakBlue)" stroke-width="2" fill="none"
+          stroke-linecap="round"
+          stroke-dasharray="180 2800" stroke-dashoffset="2800" opacity="0.55">
+      <animate attributeName="stroke-dashoffset"
+        values="2800; -200"
+        dur="2.1s"
+        begin="-0.5s"
+        calcMode="spline"
+        keyTimes="0; 1"
+        keySplines="0.5 0 0.85 0.15"
+        repeatCount="indefinite" />
+    </path>
+  </svg>
+
+  <div class="hero-content">
+    <h1 class="headline">
+      <span class="line line-1"><span>Think AI. Build AI.</span></span>
+      <span class="line line-2"><span class="accent">Accelerate Everything.</span></span>
+    </h1>
+
+    <p class="main-jp">AIで、文明を加速する。</p>
+    <p class="sub-jp">AIエージェント開発のプロフェッショナル集団</p>
   </div>
-  <div class="glow"></div>
-  <div class="streaks" id="streaks"></div>
 
-  <div class="hero-inner">
-
-    <div class="eng-wrap animate" id="engWrap">
-      <div class="eng-line l1" data-text="Think AI."></div>
-      <div class="eng-line l2" data-text="Build AI."></div>
-    </div>
-
-    <div class="sweep"></div>
-
-    <div class="copy-halo">
-      <h1 class="jp-main">AIで、文明を<span class="ac">加速</span>する</h1>
-
-      <div class="pill">
-        <span class="dot-ani"></span>
-        <span>AIエージェント開発のプロフェッショナル集団</span>
-      </div>
-    </div>
-
-  </div>
-
-  <div class="scroll-cue">
-    <span class="label">Accelerate Everything</span>
-    <div class="bar"></div>
-  </div>
+  <button class="scroll-btn" aria-label="スクロールダウン">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+         stroke-linecap="round" stroke-linejoin="round">
+      <line x1="12" y1="4" x2="12" y2="20" />
+      <polyline points="5 13 12 20 19 13" />
+    </svg>
+  </button>
 </section>
-
-<script>
-  /* =========================================================
-     Split text into words & chars, stagger animate for intro.
-     ========================================================= */
-  (function() {
-    const lines = document.querySelectorAll('.eng-line');
-    let globalIndex = 0;
-    // Timing: each character delayed by tiny amount; between lines a bigger gap
-    const charStep = 18;    // ms per char
-    const lineGap  = 120;   // ms gap between lines
-
-    lines.forEach((line, li) => {
-      const text = line.dataset.text;
-      const isAccent = !!line.dataset.accent;
-      line.textContent = '';
-
-      // Wrap in accent color if line has accent marker
-      const host = document.createElement(isAccent ? 'span' : 'span');
-      if (isAccent) host.classList.add('accent');
-      line.appendChild(host);
-
-      // Build words & chars
-      const words = text.split(' ');
-      words.forEach((w, wi) => {
-        const wordEl = document.createElement('span');
-        wordEl.className = 'word';
-        for (let i = 0; i < w.length; i++) {
-          const c = document.createElement('span');
-          c.className = 'char';
-          c.textContent = w[i];
-          c.style.animationDelay = (li * lineGap + globalIndex * charStep) + 'ms';
-          wordEl.appendChild(c);
-          globalIndex++;
-        }
-        host.appendChild(wordEl);
-      });
-
-      // Add a blurred motion trail for the "Accelerate" line
-      if (isAccent) {
-        const trail = document.createElement('span');
-        trail.className = 'trail';
-        trail.textContent = text;
-        line.appendChild(trail);
-      }
-    });
-
-    /* =========================================================
-       Generate speed streaks — ascending diagonally (up-right)
-       ========================================================= */
-    const streaksEl = document.getElementById('streaks');
-    const NUM_STREAKS = 18;
-    for (let i = 0; i < NUM_STREAKS; i++) {
-      const s = document.createElement('div');
-      s.className = 'streak';
-      const top = 35 + Math.random() * 75;
-      const left = -10 + Math.random() * 80;
-      const len = 90 + Math.random() * 320;
-      const dur = 2.4 + Math.random() * 3.4;
-      const delay = Math.random() * 5;
-      const opacity = 0.35 + Math.random() * 0.5;
-      s.style.top = top + '%';
-      s.style.left = left + '%';
-      s.style.width = len + 'px';
-      s.style.animationDuration = dur + 's';
-      s.style.animationDelay = delay + 's';
-      s.style.opacity = opacity;
-      streaksEl.appendChild(s);
-    }
-
-    /* =========================================================
-       Neural network: scatter nodes, connect the closest,
-       then send animated signal pulses along a few edges.
-       ========================================================= */
-    (function buildNetwork() {
-      const svg = document.getElementById('netSvg');
-      const SVG_NS = 'http://www.w3.org/2000/svg';
-      const W = 1440, H = 900;
-      const NUM_NODES = 26;
-
-      // Generate pseudo-random but well-distributed points
-      const nodes = [];
-      for (let i = 0; i < NUM_NODES; i++) {
-        nodes.push({
-          x: 40 + Math.random() * (W - 80),
-          y: 40 + Math.random() * (H - 80),
-          accent: Math.random() < 0.25
-        });
-      }
-
-      // Build edges: connect each node to its 2 nearest neighbors
-      const edges = [];
-      const edgeSet = new Set();
-      nodes.forEach((n, i) => {
-        const dists = nodes.map((m, j) => ({
-          j, d: i === j ? Infinity : Math.hypot(n.x - m.x, n.y - m.y)
-        })).sort((a, b) => a.d - b.d);
-        for (let k = 0; k < 2; k++) {
-          const j = dists[k].j;
-          const key = i < j ? i + '-' + j : j + '-' + i;
-          if (!edgeSet.has(key) && dists[k].d < 340) {
-            edgeSet.add(key);
-            edges.push([i, j]);
-          }
-        }
-      });
-
-      // Draw edges first (so nodes sit on top)
-      edges.forEach((e, idx) => {
-        const a = nodes[e[0]], b = nodes[e[1]];
-        const path = document.createElementNS(SVG_NS, 'path');
-        const d = `M ${a.x} ${a.y} L ${b.x} ${b.y}`;
-        path.setAttribute('d', d);
-        path.setAttribute('class', 'edge');
-        path.style.animationDelay = (0.2 + idx * 0.05) + 's';
-        svg.appendChild(path);
-      });
-
-      // Draw nodes
-      nodes.forEach((n, i) => {
-        const c = document.createElementNS(SVG_NS, 'circle');
-        c.setAttribute('cx', n.x);
-        c.setAttribute('cy', n.y);
-        c.setAttribute('r', n.accent ? 3.2 : 2);
-        c.setAttribute('class', 'node' + (n.accent ? ' accent' : ''));
-        c.style.animationDelay =
-          (0.8 + i * 0.04) + 's, ' + (2 + (i % 8) * 0.45) + 's';
-        svg.appendChild(c);
-      });
-
-      // Animated signal pulses along a subset of edges
-      const signalEdges = edges.slice(0, Math.min(10, edges.length));
-      signalEdges.forEach((e, idx) => {
-        const a = nodes[e[0]], b = nodes[e[1]];
-        const sig = document.createElementNS(SVG_NS, 'circle');
-        sig.setAttribute('r', 2.4);
-        sig.setAttribute('fill', '#2b55ff');
-        sig.setAttribute('class', 'signal');
-        svg.appendChild(sig);
-
-        const anim = document.createElementNS(SVG_NS, 'animateMotion');
-        anim.setAttribute('dur', (2.4 + Math.random() * 2.2) + 's');
-        anim.setAttribute('repeatCount', 'indefinite');
-        anim.setAttribute('begin', (1.5 + idx * 0.6) + 's');
-        anim.setAttribute('path', `M ${a.x} ${a.y} L ${b.x} ${b.y}`);
-        sig.appendChild(anim);
-
-        // Fade in/out along the travel
-        const fade = document.createElementNS(SVG_NS, 'animate');
-        fade.setAttribute('attributeName', 'opacity');
-        fade.setAttribute('values', '0;1;1;0');
-        fade.setAttribute('keyTimes', '0;0.15;0.85;1');
-        fade.setAttribute('dur', anim.getAttribute('dur'));
-        fade.setAttribute('begin', anim.getAttribute('begin'));
-        fade.setAttribute('repeatCount', 'indefinite');
-        sig.appendChild(fade);
-      });
-    })();
-  })();
-</script>
 
 </body>
 </html>
